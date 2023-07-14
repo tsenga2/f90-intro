@@ -1,4 +1,4 @@
-program workhorse_ss
+program main
 
 use kindset
 use tools
@@ -273,4 +273,4 @@ write(*,*) '  Done! '
 write(*,*); write(*,*)
 
 
-end program workhorse_ss
+end program main
