@@ -6,8 +6,8 @@ use tools
 implicit none
 
 integer(kind=ik), parameter :: neps = 15
-integer(kind=ik), parameter :: nk   = 100
-integer(kind=ik), parameter :: nkg  = 100
+integer(kind=ik), parameter :: nk   = 95
+integer(kind=ik), parameter :: nkg  = 95
 integer(kind=ik), parameter :: kin = 5
 
 integer(kind=ik) :: olgo, ie, iie, ix, iteration
@@ -65,6 +65,7 @@ call ergodicdist(neps, pie, 10.0_rk**(-6.0_rk), pie0)
 ! Grids on capital
 allocate(kgrid(nk), kagrid(nkg))
 call linspace(klow, khigh, nk, kgrid)
+call linspace(klow, khigh0, nkg, kgrid)
 call linspace(klow0, khigh0, nkg, kagrid)
 
 ! Allocations must be before iterative steps

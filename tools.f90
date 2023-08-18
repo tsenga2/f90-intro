@@ -1,9 +1,7 @@
 module tools
 
 use kindset
-
-use omp_lib
-
+use mod_splines
 implicit none
 
 private
@@ -92,12 +90,13 @@ end subroutine decisions
 subroutine maxgss(ev, xval, nk, kgrid, qrf, &
                   vcmax, kmax, gloc)
                       
-integer(ik):: nk, ikv, ikpvec(1), gloc
+type(spline) :: sp
+integer(ik):: nk, ikv, ikpvec(1), gloc, i, n
 
 real(rk):: ev(nk), qrf, &
            kgrid(nk), xval, &
            vcmax, kmax, &
-           dval(nk), vc(nk), kfval
+           dval(nk), vc(nk), kfval, h, x, y
 
 intent(in):: ev, xval, nk, kgrid, qrf
 intent(out):: vcmax, kmax, gloc
@@ -112,12 +111,37 @@ do ikv = 1, nk
     vc(ikv) = dval(ikv) + qrf*ev(ikv)
 end do
 
-ikpvec = maxloc(vc)
-gloc = ikpvec(1)
+!Cubic spline version
+if (nk.gt.100) then
+    !n = 50
+    !h = (kgrid(size(kgrid))-kgrid(1))/(n-1)
+    !print *, 'Cubic Spline Interpolation Demo'
+    sp = spline(kgrid, vc)
+    !print *, ""
+    !print '(1x,a6,1x,a18,1x,a18)', "Index", "x", "y"
+    !do i=1,n
+    !    x = kgrid(1) + (i-1)*h
+    !    y = sp%value(x)
+    !    print '(1x,i6,1x,g18.11,1x,g18.6)', i, x, y
+    !end do
+    kmax = sp%extrema()
+    gloc = sp%indexof(kmax)
+    vcmax = sp%value(kmax)
 
-vcmax = vc(gloc)
-kmax = kgrid(gloc)
-    
+    !print *, "Local Extrema"
+    !print '(1x,a6,1x,a18,1x,a18)', "Index", "x", "y"
+    !Print '(1x,i6,1x,g18.11,1x,g18.6)', gloc, kmax, vcmax
+
+else
+    ikpvec = maxloc(vc)
+    gloc = ikpvec(1)
+
+    vcmax = vc(gloc)
+    kmax = kgrid(gloc)
+    !Print '(1x,i6,1x,g18.11,1x,g18.6)', gloc, kmax, vcmax
+
+endif
+
 end subroutine maxgss
 
 
